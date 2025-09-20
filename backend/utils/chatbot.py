@@ -67,9 +67,12 @@ async def generate_stream_response(api_key: str, chat_payload: ChatRequest):
 
         persona_id = chat_payload.persona.id.lower()
         if persona_id == "custom":
-            char_name = chat_payload.persona.name
-            char_desc = chat_payload.persona.description
-            char_tone = chat_payload.persona.tone
+            # --- FIX IS HERE ---
+            # We add a fallback value for each optional field to ensure it's never None.
+            char_name = chat_payload.persona.name or "Unnamed Persona"
+            char_desc = chat_payload.persona.description or "A helpful companion."
+            char_tone = chat_payload.persona.tone or "a neutral"
+            # -------------------
         else:
             details = PREDEFINED_CHARACTERS.get(persona_id, {})
             char_name = details.get("name", "Aura")
@@ -95,5 +98,3 @@ async def generate_stream_response(api_key: str, chat_payload: ChatRequest):
     except Exception as e:
         print(f"LLM streaming failed with exception: {e}")
         yield "Apologies, I'm experiencing a technical difficulty. Could you try again?"
-
-
