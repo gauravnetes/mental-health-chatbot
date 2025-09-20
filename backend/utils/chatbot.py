@@ -3,7 +3,7 @@ from google.api_core import exceptions
 from models.chat import ChatRequest
 
 
-SYSTEM_PROMPT_TEMPLATE = """
+AI_INSTRUCTION_TEMPLATE = """
 You are {{persona.name}}, a compassionate AI mental health support companion. Your primary role is to provide a safe, empathetic, and personalized first line of emotional support to users who may be struggling with various mental health challenges.
 
 ## CORE IDENTITY AND MISSION
@@ -41,8 +41,7 @@ Respond as {{persona.name}} in your characteristic {{persona.tone}} style. Provi
 """
 
 
-# --- Persona Prompts ---
-persona_details = {
+PREDEFINED_CHARACTERS = {
     "doraemon": {
         "name": "Doraemon",
         "description": "A helpful and optimistic robotic cat from the 22nd century. Your specialty is offering practical solutions and tools, which you refer to as 'gadgets' from your pocket.",
@@ -60,76 +59,41 @@ persona_details = {
     }
 }
 
-async def get_gemini_response_stream(api_key: str, request: ChatRequest):
-    """
-    Builds a detailed prompt from the template and streams a response from Gemini.
-    """
+async def generate_stream_response(api_key: str, chat_payload: ChatRequest):
     try:
         genai.configure(api_key=api_key)
 
-        # 1. Start with the main template
-        final_prompt = SYSTEM_PROMPT_TEMPLATE
+        final_instruction = AI_INSTRUCTION_TEMPLATE
 
-        # 2. Get persona details
-        persona_id = request.persona.id.lower()
+        persona_id = chat_payload.persona.id.lower()
         if persona_id == "custom":
-            # Use details from the request for custom personas
-            p_name = request.persona.name
-            p_desc = request.persona.description
-            p_tone = request.persona.tone
+            char_name = chat_payload.persona.name
+            char_desc = chat_payload.persona.description
+            char_tone = chat_payload.persona.tone
         else:
-            # Look up details for pre-made personas
-            details = persona_details.get(persona_id, {})
-            p_name = details.get("name", "Aura")
-            p_desc = details.get("description", "A caring companion.")
-            p_tone = details.get("tone", "Empathetic")
+            details = PREDEFINED_CHARACTERS.get(persona_id, {})
+            char_name = details.get("name", "Aura")
+            char_desc = details.get("description", "A caring companion.")
+            char_tone = details.get("tone", "Empathetic")
 
-        # 3. Inject persona details into the prompt
-        final_prompt = final_prompt.replace("{{persona.name}}", p_name)
-        final_prompt = final_prompt.replace("{{persona.description}}", p_desc)
-        final_prompt = final_prompt.replace("{{persona.tone}}", p_tone)
+        final_instruction = final_instruction.replace("{{persona.name}}", char_name)
+        final_instruction = final_instruction.replace("{{persona.description}}", char_desc)
+        final_instruction = final_instruction.replace("{{persona.tone}}", char_tone)
 
-        # 4. Format and inject chat history
-        history_text = "\n".join([f"{msg.role}: {msg.parts[0]}" for msg in request.chatHistory])
-        final_prompt = final_prompt.replace("{{chat_history}}", history_text)
+        conversation_context = "\n".join([f"{msg.role}: {msg.parts[0]}" for msg in chat_payload.chatHistory])
+        final_instruction = final_instruction.replace("{{chat_history}}", conversation_context)
 
-        # 5. Inject the new user message
-        final_prompt = final_prompt.replace("{{user.message}}", request.message)
+        final_instruction = final_instruction.replace("{{user.message}}", chat_payload.message)
 
-        # For debugging, you can print the final prompt
-        # print("----- FINAL PROMPT SENT TO GEMINI -----")
-        # print(final_prompt)
-        # print("------------------------------------")
-
-        # 6. Call the Gemini API with the complete prompt
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
-        response_stream = await model.generate_content_async(final_prompt, stream=True)
+        llm_model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        llm_stream = await llm_model.generate_content_async(final_instruction, stream=True)
         
-        async for chunk in response_stream:
+        async for chunk in llm_stream:
             if chunk.text:
                 yield chunk.text
 
     except Exception as e:
-        print(f"Error during streaming: {e}")
-        yield "I'm sorry, an error occurred on my end. Please try again."
+        print(f"LLM streaming failed with exception: {e}")
+        yield "Apologies, I'm experiencing a technical difficulty. Could you try again?"
 
 
-
-# async def get_gemini_response(api_key: str, message: str, prompt_input: str, is_custom: bool):
-#     """Gets a full response from the Gemini API using a provided API key."""
-#     try:
-#         # Configure the API key just-in-time
-#         genai.configure(api_key=api_key)
-#         model = genai.GenerativeModel('gemini-1.5-flash-latest')
-
-#         system_prompt = prompt_input if is_custom else persona_prompts.get(prompt_input.lower(), persona_prompts["default"])
-#         full_prompt = f"{system_prompt}\n\nUser: {message}\n\nAI:"
-
-#         response = await model.generate_content_async(full_prompt)
-#         return response.text
-#     except exceptions.PermissionDenied as e:
-#         print(f"Authentication Error: {e}")
-#         return "Error: The provided API Key is invalid or has insufficient permissions."
-#     except Exception as e:
-#         print(f"Error generating response from Gemini: {e}")
-#         return None
