@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
 import { Turn as Hamburger } from "hamburger-react";
-import { Context } from "../../context/Context";
+import { AppContext } from "../../context/AppContext";
 import "./Sidebar.css";
 import { assets } from "../../assets/assets";
+
 const Sidebar = () => {
   const [isOpen, setOpen] = useState(false);
   const [extended, setExtended] = useState(false);
@@ -10,7 +11,8 @@ const Sidebar = () => {
     setExtended((prev) => !prev);
   };
 
-  const { onSent, setRecentPrompt, PrevPrompt, newChat } = useContext(Context);
+  const { onSent, setRecentPrompt, PrevPrompt, newChat } =
+    useContext(AppContext);
   const loadPrompt = async (prompt) => {
     setRecentPrompt(prompt);
     await onSent(prompt);
