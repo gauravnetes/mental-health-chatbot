@@ -151,15 +151,35 @@ const ContextProvider = (props) => {
       setIsCurrentChatSaved(false);
     }
 
+    let personaForPayload = {};
+    if (persona.id === 'custom') {
+      // For custom personas, include all the details
+      personaForPayload = {
+        id: 'custom',
+        name: persona.name,
+        description: persona.description,
+        tone: persona.tone
+      };
+    } else {
+      // For pre-made personas, we only need the ID
+      personaForPayload = { id: persona.id };
+    }
+
+    const apiPayload = {
+      message: promptToSend,
+      persona: personaForPayload, // Use the correctly constructed object
+      chatHistory: newHistoryWithUserMessage.slice(-8).map(msg => ({
+        // Ensure parts is an array of strings
+        role: msg.role,
+        parts: Array.isArray(msg.parts) ? msg.parts : [String(msg.parts)]
+      })),
+    };
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: promptToSend,
-          persona: { id: persona.id },
-          chatHistory: newHistoryWithUserMessage.slice(-8),
-        }),
+        body: JSON.stringify(apiPayload), // Send the final, correct payload
       });
 
       if (!response.body) throw new Error("Response body is null.");
