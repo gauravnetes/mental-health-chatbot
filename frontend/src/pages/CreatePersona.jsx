@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PersonaAppContext } from '../context/PersonaAppContext';
 
 const CreatePersona = () => {
-  const { setCustomPersona } = useContext(PersonaAppContext);
+  const { addCustomPersona } = useContext(PersonaAppContext);
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -16,8 +16,22 @@ const CreatePersona = () => {
       alert("Please fill in both name and description.");
       return;
     }
-    setCustomPersona({ id: 'custom', name, description, tone });
-    navigate('/chat/custom');
+
+    const personaId = 'custom_' + Date.now();
+
+    const newPersona = {
+      id: personaId,
+      name,
+      description,
+      tone,
+      isCustom: true
+    };
+
+    addCustomPersona(newPersona);
+    
+    // FIX: Pass the new persona object in the navigation state
+    // This solves the race condition by giving the ChatPage the data it needs immediately.
+    navigate(`/chat/${personaId}`, { state: { newPersona: newPersona } });
   };
 
   return (
@@ -74,3 +88,4 @@ const CreatePersona = () => {
 };
 
 export default CreatePersona;
+
