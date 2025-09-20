@@ -1,30 +1,44 @@
 import sys
 import os
-
-# --- FIX FOR PYLANCE IMPORT ERROR ---
-# This adds the project's root directory to the Python path
-# so that it can find the 'routers' and 'models' modules.
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-# ------------------------------------
-
+from contextlib import asynccontextmanager 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
-from router.chat import router as chat_router
+from router.chat import router 
 
-# Load environment variables from the .env file
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 load_dotenv()
 
-# Initialize the main FastAPI application instance
-app = FastAPI(title="HOMH04 AI Chatbot API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Application startup...")
+    
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri:
+        raise ValueError("MONGO_URI environment variable not set!")
+    
+    app.mongodb_client = AsyncIOMotorClient(mongo_uri)
+    app.database = app.mongodb_client["homh04_db"]
+    print("🚀 Successfully connected to the MongoDB database.")
+    
+    yield 
+    
+    print("Application shutdown...")
+    app.mongodb_client.close()
+    print("MongoDB connection closed.")
 
-# --- CORS Middleware ---
+
+app = FastAPI(
+    title="HOMH04 AI Chatbot API",
+    lifespan=lifespan 
+)
+
+
 origins = [
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "*" # A simple wildcard for hackathon purposes
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -34,27 +48,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Database Connection ---
-@app.on_event("startup")
-async def startup_db_client():
-    """Connects to MongoDB when the app starts up."""
-    mongo_uri = os.getenv("MONGO_URI")
-    if not mongo_uri:
-        raise ValueError("MONGO_URI environment variable not set!")
-    app.mongodb_client = AsyncIOMotorClient(mongo_uri)
-    app.database = app.mongodb_client["homh04_db"]
-    print("🚀 Successfully connected to the MongoDB database.")
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    """Closes the MongoDB connection when the app shuts down."""
-    app.mongodb_client.close()
-    print("MongoDB connection closed.")
+app.include_router(router, prefix="/api")
 
-# --- API Routers ---
-app.include_router(chat_router, prefix="/api")
 
-# --- Root Endpoint ---
 @app.get("/")
 def read_root():
     """Root GET endpoint for health check."""
