@@ -3,7 +3,7 @@ import { Turn as Hamburger } from "hamburger-react";
 import { AppContext } from "../../context/AppContext";
 import "./Sidebar.css";
 import { assets } from "../../assets/assets";
-
+import { Link } from "react-router-dom";
 const Sidebar = () => {
   const [isOpen, setOpen] = useState(false);
   const [extended, setExtended] = useState(false);
@@ -11,12 +11,8 @@ const Sidebar = () => {
     setExtended((prev) => !prev);
   };
 
-  const { 
-    newChat,
-    savedChats,
-    currentChatId,
-    loadChat
-  } = useContext(AppContext);
+  const { newChat, savedChats, currentChatId, loadChat } =
+    useContext(AppContext);
 
   // Load a complete chat conversation
   const loadChatConversation = (chatId) => {
@@ -48,9 +44,22 @@ const Sidebar = () => {
             rounded
           />
         </div>
+        <Link
+          to="/personas"
+          className={`mt-5 flex bg-[#282a2c] transition-all ease-in hover:bg-[#3e4144] m-2 cursor-pointer rounded-full items-center max-w-36`}
+        >
+          <img className="p-2" src={assets.persona} alt="Personas" />
+          <h1
+            className={`font-semibold min-w-24 transition-all ease-in-out delay-[.2s] py-3 duration-[.2s] ${
+              extended ? "opacity-100" : "opacity-0"
+            }`}
+          >
+          Persona
+          </h1>
+        </Link>
         <div
           onClick={() => newChat()}
-          className={`mt-12 flex bg-[#282a2c] transition-all ease-in hover:bg-[#3e4144] m-2 cursor-pointer rounded-full items-center max-w-36`}
+          className={`mt-5 flex bg-[#282a2c] transition-all ease-in hover:bg-[#3e4144] m-2 cursor-pointer rounded-full items-center max-w-36`}
         >
           <img className="p-2" src={assets.add} alt="New chat" />
           <h1
@@ -77,9 +86,9 @@ const Sidebar = () => {
               key={chat.id}
               onClick={() => loadChatConversation(chat.id)}
               className={`recent-content text-[#cbc7c7] rounded-full py-2 px-3 flex min-w-36 mb-2 transition-all duration-[.1s] cursor-pointer gap-2 text-sm ${
-                isActive 
-                  ? 'bg-[#3e4144] border border-[#555]' 
-                  : 'hover:bg-[#2a2c2e]'
+                isActive
+                  ? "bg-[#3e4144] border border-[#555]"
+                  : "hover:bg-[#2a2c2e]"
               } ${
                 extended
                   ? "delay-300 transition-opacity blur-none opacity-100"
@@ -87,9 +96,7 @@ const Sidebar = () => {
               }`}
             >
               <img src={assets.recent} alt="" />
-              <p title={chat.title}>
-                {chat.title}
-              </p>
+              <p title={chat.title}>{chat.title}</p>
             </div>
           );
         })}

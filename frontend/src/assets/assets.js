@@ -11,6 +11,8 @@ import send from "./send.svg";
 import urban from "./urban.png";
 import help from "./help.svg";
 import logo from "./logo.png";
+import persona from "./cpu.png";
+
 
 export const assets = {
   add,
@@ -24,5 +26,7 @@ export const assets = {
   recent,
   send,
   urban,
-  help
+  help,
+  logo,
+  persona
 };
