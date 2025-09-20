@@ -3,7 +3,6 @@ import { AppContext } from "./AppContext";
 import PropTypes from "prop-types";
 
 const ContextProvider = (props) => {
-  // --- CHAT SESSION MANAGEMENT ---
   const [savedChats, setSavedChats] = useState(() => {
     const saved = localStorage.getItem('savedChats');
     return saved ? JSON.parse(saved) : [];
@@ -15,7 +14,6 @@ const ContextProvider = (props) => {
 
   const [isCurrentChatSaved, setIsCurrentChatSaved] = useState(false);
 
-  // --- EXISTING STATE (keeping your structure) ---
   const [chatHistory, setChatHistory] = useState(() => {
     const saved = localStorage.getItem(`chat_${currentChatId}`);
     return saved ? JSON.parse(saved) : [];
@@ -26,7 +24,6 @@ const ContextProvider = (props) => {
   const [Loading, setLoading] = useState(false);
   const [ShowResult, setShowResult] = useState(chatHistory.length > 0);
 
-  // --- HELPER FUNCTIONS ---
   function generateChatId() {
     return Date.now().toString() + Math.random().toString(36).substr(2, 9);
   }
@@ -36,8 +33,6 @@ const ContextProvider = (props) => {
     return prompt.length > 40 ? prompt.slice(0, 40) + "..." : prompt;
   }
 
-  // --- LOCALSTORAGE SAVING ---
-  // Save current chat whenever chatHistory changes
   useEffect(() => {
     if (chatHistory.length > 0) {
       localStorage.setItem(`chat_${currentChatId}`, JSON.stringify(chatHistory));
@@ -45,32 +40,26 @@ const ContextProvider = (props) => {
     setShowResult(chatHistory.length > 0);
   }, [chatHistory, currentChatId]);
 
-  // Save current chat ID
   useEffect(() => {
     localStorage.setItem('currentChatId', currentChatId);
   }, [currentChatId]);
 
-  // Save saved chats list
   useEffect(() => {
     localStorage.setItem('savedChats', JSON.stringify(savedChats));
   }, [savedChats]);
 
-  // --- CURRENT PERSONA STATE ---
   const [currentPersona, setCurrentPersona] = useState(() => {
     const saved = localStorage.getItem('currentPersona');
     return saved ? JSON.parse(saved) : null;
   });
 
-  // Save current persona to localStorage
   useEffect(() => {
     if (currentPersona) {
       localStorage.setItem('currentPersona', JSON.stringify(currentPersona));
     }
   }, [currentPersona]);
 
-  // --- NEW CHAT FUNCTION (FIXED) ---
   const newChat = () => {
-    // Only save current chat if it has messages and hasn't been saved yet
     if (chatHistory.length > 0 && !isCurrentChatSaved) {
       const firstUserMessage = chatHistory.find(msg => msg.role === "user");
       const chatTitle = generateChatTitle(firstUserMessage?.parts[0] || "New Chat");
@@ -83,16 +72,14 @@ const ContextProvider = (props) => {
       };
 
       setSavedChats(prev => {
-        // Check if already exists (shouldn't happen, but just in case)
         const exists = prev.some(chat => chat.id === currentChatId);
         if (!exists) {
-          return [chatToSave, ...prev].slice(0, 50); // Keep only last 50 chats
+          return [chatToSave, ...prev].slice(0, 50);
         }
         return prev;
       });
     }
 
-    // Start fresh chat
     const newChatId = generateChatId();
     setCurrentChatId(newChatId);
     setChatHistory([]);
@@ -102,9 +89,7 @@ const ContextProvider = (props) => {
     setRecentPrompt("");
   };
 
-  // --- LOAD CHAT FROM HISTORY ---
   const loadChat = (chatId) => {
-    // Save current chat before switching (if it has messages and isn't saved)
     if (chatHistory.length > 0 && !isCurrentChatSaved && currentChatId !== chatId) {
       const firstUserMessage = chatHistory.find(msg => msg.role === "user");
       const chatTitle = generateChatTitle(firstUserMessage?.parts[0] || "New Chat");
@@ -125,14 +110,12 @@ const ContextProvider = (props) => {
       });
     }
 
-    // Load the selected chat
     const selectedChat = savedChats.find(chat => chat.id === chatId);
     if (selectedChat) {
       setCurrentChatId(chatId);
       setChatHistory(selectedChat.messages);
       setIsCurrentChatSaved(true);
       
-      // Set recent prompt to last user message
       const lastUserMessage = selectedChat.messages
         .filter(msg => msg.role === "user")
         .pop();
@@ -142,9 +125,7 @@ const ContextProvider = (props) => {
     }
   };
 
-  // --- MODIFIED ONSENT FUNCTION ---
   const onSent = async (prompt, personaObject = null) => {
-    // Use current persona if no personaObject provided
     const persona = personaObject || currentPersona;
     
     if (!persona) {
@@ -166,7 +147,6 @@ const ContextProvider = (props) => {
     const aiPlaceholder = { role: "model", parts: [""] };
     setChatHistory([...newHistoryWithUserMessage, aiPlaceholder]);
 
-    // Mark current chat as unsaved since we're adding new content
     if (isCurrentChatSaved) {
       setIsCurrentChatSaved(false);
     }
@@ -208,7 +188,6 @@ const ContextProvider = (props) => {
     }
   };
 
-  // --- UPDATE CURRENT CHAT IN SAVED CHATS (real-time updates) ---
   useEffect(() => {
     if (isCurrentChatSaved && chatHistory.length > 0) {
       setSavedChats(prev => {
@@ -227,7 +206,6 @@ const ContextProvider = (props) => {
   }, [chatHistory, currentChatId, isCurrentChatSaved]);
 
   const contextValue = {
-    // Existing props (maintaining compatibility)
     Input,
     setInput,
     RecentPrompt,
@@ -238,13 +216,11 @@ const ContextProvider = (props) => {
     chatHistory,
     ShowResult,
     
-    // New props for improved sidebar
     savedChats,
     currentChatId,
     loadChat,
     isCurrentChatSaved,
     
-    // Persona management
     currentPersona,
     setCurrentPersona,
   };

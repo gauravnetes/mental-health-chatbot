@@ -2,21 +2,17 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PersonaProvider } from "./context/PersonaProvider.jsx";
 import ContextProvider from "./context/Context.jsx";
 
-// Import your new pages. Make sure you have created these files.
-import MoodCheck from "./pages/MoodCheck";
-import PersonaHub from "./pages/PersonaHub";
+import MoodCheck from "./pages/MoodChecker.jsx";
+import PersonaHub from "./pages/PersonaDock.jsx";
 import CreatePersona from "./pages/CreatePersona";
-import ChatPage from "./pages/ChatPage";
+import ChatPage from "./pages/MainChatPage.jsx";
 
 function App() {
   return (
-    // The Context Providers now wrap the entire router,
-    // making state available to all pages.
     <ContextProvider>
       <PersonaProvider>
         <Router>
           <Routes>
-            {/* Each Route defines a page for a specific URL path */}
             <Route path="/" element={<MoodCheck />} />
             <Route path="/personas" element={<PersonaHub />} />
             <Route path="/create-persona" element={<CreatePersona />} />

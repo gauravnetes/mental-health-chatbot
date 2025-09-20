@@ -4,7 +4,6 @@ const MoodCheck = () => {
   const navigate = useNavigate();
 
   const handleMoodSelect = (mood) => {
-    // Navigate to the persona hub and pass the selected mood in the state
     navigate('/personas', { state: { mood } });
   };
 

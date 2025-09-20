@@ -16,9 +16,7 @@ const CreatePersona = () => {
       alert("Please fill in both name and description.");
       return;
     }
-    // Update the global context with the new persona data
     setCustomPersona({ id: 'custom', name, description, tone });
-    // Navigate to the chat page, which will now use this custom persona
     navigate('/chat/custom');
   };
 

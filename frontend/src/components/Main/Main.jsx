@@ -11,19 +11,18 @@ const Main = ({ onSent }) => {
 
   const chatEndRef = useRef(null);
 
-  // Auto-scroll to the latest message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && Input) {
-      onSent(Input); // 2. Call the onSent from props
+      onSent(Input);
     }
   };
 
   const handleCardClick = (prompt) => {
-    onSent(prompt); // 3. Call the onSent from props
+    onSent(prompt); 
   };
 
   return (
