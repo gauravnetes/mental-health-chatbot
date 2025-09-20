@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import "./Main.css";
-import { Context } from "../../context/Context";
+import { AppContext } from "../../context/AppContext";
 import MyLoader from "../Loader/Loader";
 import { assets } from "../../assets/assets";
 const Main = () => {
@@ -16,7 +16,7 @@ const Main = () => {
     // setResultData,
     ResultData,
     onSent,
-  } = useContext(Context);
+  } = useContext(AppContext);
   const handleKeyDown = (event) => {
     if (event.key == "Enter") {
       onSent();
@@ -146,10 +146,9 @@ const Main = () => {
                 {Loading ? (
                   <MyLoader className="w-[80%] h-12 lg:h-[124px] " />
                 ) : (
-                  <p
-                    className=" mt-1"
-                    dangerouslySetInnerHTML={{ __html: ResultData }}
-                  />
+                  <p className="mt-1" style={{ whiteSpace: "pre-wrap" }}>
+                    {ResultData}
+                  </p>
                 )}
               </div>
             </div>

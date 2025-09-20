@@ -1,58 +1,71 @@
-import React, { createContext, useState } from "react";
-import run from "../config/gemini";
-
-export const Context = createContext();
+import { useState } from "react";
+import { AppContext } from "./AppContext";
+import PropTypes from 'prop-types';
 
 const ContextProvider = (props) => {
-const newChat = ()=>{
-  setLoading(false);
-  setShowResult(false)
-}
-
-
-  const onSent = async (prompt) => {
-    setResultData("");
-    setLoading(true);
-    setShowResult(true);
-    setInput("");
-
-    let response;
-    if (prompt !== undefined) {
-      setRecentPrompt(prompt)
-      response = await run(prompt)   
-    }else{
-      setPrevPrompt(prev => [...prev, Input])
-      setRecentPrompt(Input);
-      response = await run(Input)
-
-    }
-
-
-
-    const formattedResponse = response
-      .replace(/## (.*)/g, "<h2>$1</h2>")
-      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-      .replace(/\n\n/g, "<p></p>")
-      .replace(/\n/g, "<br />")
-      .replace(/\*/g, ">");
-    console.log(formattedResponse);
-    let newResponseArray = formattedResponse.split(" ");
-    let delay = 0;
-    newResponseArray.forEach((word, index) => {
-      setTimeout(() => {
-        setResultData((prev) => prev + word + " ");
-      }, delay);
-      delay += 75;
-    });
-
-    setLoading(false);
-  };
   const [Input, setInput] = useState("");
   const [RecentPrompt, setRecentPrompt] = useState("");
   const [PrevPrompt, setPrevPrompt] = useState([]);
   const [ShowResult, setShowResult] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [ResultData, setResultData] = useState("");
+
+  // You can add a state for the persona and change it from your UI later
+  const [persona, setPersona] = useState("mochi"); // Default persona
+
+  const newChat = () => {
+    setLoading(false);
+    setShowResult(false);
+  };
+
+  const onSent = async (prompt) => {
+    // Reset previous results
+    setResultData("");
+    setLoading(true);
+    setShowResult(true);
+
+    // Determine the prompt to send
+    const promptToSend = prompt !== undefined ? prompt : Input;
+    setRecentPrompt(promptToSend);
+
+    // Clear the input field
+    setInput("");
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/chat/stream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: promptToSend,
+          persona: persona, // Send the currently selected persona
+        }),
+      });
+
+      if (!response.body) {
+        throw new Error("Response body is null.");
+      }
+
+      // Prepare to read the stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      setLoading(false); // Stop the loader once the first chunk arrives
+
+      // Read from the stream continuously
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break; // Stream is finished
+
+        const chunk = decoder.decode(value);
+
+        // Append the new chunk to ResultData in real-time
+        setResultData((prev) => prev + chunk);
+      }
+    } catch (error) {
+      console.error("Streaming failed:", error);
+      setResultData("Oops! Something went wrong. Please try again.");
+      setLoading(false);
+    }
+  };
 
   const contextValue = {
     Input,
@@ -65,10 +78,21 @@ const newChat = ()=>{
     Loading,
     ResultData,
     onSent,
-    newChat
+    newChat,
+    setPersona,
   };
+
   return (
-    <Context.Provider value={contextValue}>{props.children}</Context.Provider>
+    <AppContext.Provider value={contextValue}>
+      {props.children}
+    </AppContext.Provider>
   );
 };
+
+
+ContextProvider.propTypes = {
+  children: PropTypes.node.isRequired
+};
+
+
 export default ContextProvider;
