@@ -28,22 +28,17 @@ async def handle_chat(request: ChatRequest):
     return {"response": ai_response}
 
 @router.post("/chat/stream")
-async def handle_chat_stream(request: ChatRequest):
+async def handle_chat_stream(request: ChatRequest): # The request body is now the new model
     google_api_key = os.getenv("GOOGLE_API_KEY")
     if not google_api_key:
-        # For streams, we can't raise an HTTPException easily, so we stream an error message.
         async def error_stream():
             yield "Error: GOOGLE_API_KEY not configured on server."
         return StreamingResponse(error_stream(), media_type="text/event-stream")
 
-    prompt_to_use = request.customPrompt if request.customPrompt else request.persona
-    
     return StreamingResponse(
         get_gemini_response_stream(
             api_key=google_api_key,
-            message=request.message,
-            prompt_input=prompt_to_use,
-            is_custom=(request.customPrompt is not None)
+            request=request # Pass the entire request object
         ),
         media_type="text/event-stream"
     )
