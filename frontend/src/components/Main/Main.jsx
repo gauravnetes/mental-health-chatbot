@@ -35,7 +35,7 @@ const Main = () => {
   return (
     <>
       {/* FIX 3: Set the main background color and created a proper flex layout */}
-      <div className="relative w-full h-screen flex flex-col bg-[#27272A] text-[#E4E4E7]">
+      <div className="relative w-full h-screen flex flex-col bg-zinc-900 text-[#E4E4E7]">
         
         {/* Header section */}
         <header className="relative p-4 lg:px-5">
