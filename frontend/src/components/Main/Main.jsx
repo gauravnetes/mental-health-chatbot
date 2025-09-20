@@ -31,8 +31,8 @@ const Main = () => {
      <div className="relative w-[100%] h-[100vh] overflow-hidden">
      <div className="relative bg-red lg:px-5 lg:py-5">
         <nav className=" flex justify-between mt-8 lg:mt-0 ">
-          <h1 className="absolute text-white left-[17vw] mt-1 lg:mt-0 lg:left-[6vw] text-2xl font-semibold">
-            AstraG
+          <h1 className="absolute left-[17vw] mt-1 lg:mt-0 lg:left-[6vw] text-2xl font-semibold">
+            MOCHI.Ai
           </h1>
           <img
             className=" absolute right-5 w-[40px] h-[40px]"
@@ -55,7 +55,7 @@ const Main = () => {
             </div>
 
             
-            <div className="cards h-72 w-[100%] absolute lg:left-[50%] lg:-translate-x-[50%] text-white mt-20 lg:mt-4 flex justify-center items-center flex-wrap gap-2 lg:gap-5 ">
+            <div className="cards h-72 w-[100%] absolute lg:left-[50%] lg:-translate-x-[50%] mt-20 lg:mt-4 flex justify-center items-center flex-wrap gap-2 lg:gap-5 ">
 
               <div onClick={()=>loadPrompt("Suggest beautiful places to see on an upcoming road trip.")} className="card relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 h-36 w-36 lg:w-40 lg:h-[26vh] rounded-3xl ">
                 <p className="text-[13px] w-24">
@@ -130,7 +130,7 @@ const Main = () => {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           value={Input}
-          className="w-[90%] text-white ml-3 border-none outline-none bg-transparent"
+          className="w-[90%] ml-3 border-none outline-none bg-transparent"
           type="text"
           placeholder=""
         />
@@ -142,7 +142,7 @@ const Main = () => {
         :null}
       </div>
 
-      {/* <div className="absolute text-white bottom-2 lg:opacity-0  left-[50%] -translate-x-[50%]">made by sobu</div> */}
+      {/* <div className="absolute bottom-2 lg:opacity-0  left-[50%] -translate-x-[50%]">made by sobu</div> */}
      </div>
     </>
   );

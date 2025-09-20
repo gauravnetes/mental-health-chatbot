@@ -16,9 +16,9 @@ const Sidebar = () => {
     await onSent(prompt);
   };
   const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = 'public/user-manual!.pdf'; 
-    link.download = 'User Manual.pdf'; 
+    const link = document.createElement("a");
+    link.href = "public/user-manual!.pdf";
+    link.download = "User Manual.pdf";
     link.click();
   };
   return (
@@ -45,7 +45,7 @@ const Sidebar = () => {
         >
           <img className="p-2" src={assets.add} alt="New chat" />
           <h1
-            className={`font-semibold min-w-24   text-white transition-all ease-in-out delay-[.2s] py-3 duration-[.2s] ${
+            className={`font-semibold min-w-24    transition-all ease-in-out delay-[.2s] py-3 duration-[.2s] ${
               extended ? "opacity-100" : "opacity-0"
             } `}
           >
@@ -59,11 +59,12 @@ const Sidebar = () => {
           extended ? "opacity-100" : "opacity-0 w-0"
         }`}
       >
-        <h2 className=" text-white mb-4">Recents</h2>
+        <h2 className="  mb-4">Recents</h2>
 
         {PrevPrompt.map((items, index) => {
           return (
             <div
+              key={index}
               onClick={() => {
                 loadPrompt(items);
               }}
@@ -81,52 +82,40 @@ const Sidebar = () => {
       </div>
 
       <div className="lower m-5 absolute bottom-5 flex flex-col gap-5">
-        <a href="https://www.instagram.com/maihoonshobu/">
-          <div className="text-white flex gap-3">
-            <img 
+        <a href="https://www.instagram.com/mainhoonshobu/">
+          <div className=" flex gap-3">
+            <img
               className={`transition-all ease-in-out delay-[.2s] duration-[.2s] ${
                 extended ? "opacity-100" : "opacity-0 lg:opacity-100"
-              }`} 
-              src={assets.follow} 
-              alt="" 
+              }`}
+              src={assets.follow}
+              alt=""
             />
-            {extended && (
-              <h2 className="fade-in">
-                Follow
-              </h2>
-            )}
+            {extended && <h2 className="fade-in">Follow</h2>}
           </div>
         </a>
         <a href="">
-          <div onClick={handleDownload} className="text-white flex gap-3">
-            <img 
+          <div onClick={handleDownload} className=" flex gap-3">
+            <img
               className={`transition-all ease-in-out delay-[.2s] duration-[.2s] ${
                 extended ? "opacity-100" : "opacity-0 lg:opacity-100"
-              }`} 
-              src={assets.help} 
-              alt="" 
+              }`}
+              src={assets.help}
+              alt=""
             />
-            {extended && (
-              <h2 className="fade-in">
-                Help
-              </h2>
-            )}
+            {extended && <h2 className="fade-in">Help</h2>}
           </div>
         </a>
         <a href="https://github.com/S-o-b-u/AstraGen1/pulls">
-          <div className="text-white flex gap-3">
-            <img 
+          <div className=" flex gap-3">
+            <img
               className={`transition-all ease-in-out delay-[.2s] duration-[.2s] ${
                 extended ? "opacity-100" : "opacity-0 lg:opacity-100"
-              }`} 
-              src={assets.contri} 
-              alt="" 
+              }`}
+              src={assets.contri}
+              alt=""
             />
-            {extended && (
-              <h2 className="fade-in">
-                Contribute
-              </h2>
-            )}
+            {extended && <h2 className="fade-in">Contribute</h2>}
           </div>
         </a>
       </div>
