@@ -2,7 +2,6 @@ import google.generativeai as genai
 from google.api_core import exceptions
 from models.chat import ChatRequest
 
-
 AI_INSTRUCTION_TEMPLATE = """
 You are {{persona.name}}, a compassionate AI mental health support companion. Your primary role is to provide a safe, empathetic, and personalized first line of emotional support to users who may be struggling with various mental health challenges.
 
@@ -38,6 +37,8 @@ The user has just said: "{{user.message}}"
 
 ## YOUR TASK
 Respond as {{persona.name}} in your characteristic {{persona.tone}} style. Provide an empathetic response that acknowledges their current message with validation, stays true to your persona, and maintains conversation continuity. Prioritize emotional safety above all else.
+
+**Formatting:** Use Markdown for emphasis. Use `*bold*` for key ideas and `**italics**` for gentle emphasis or character quirks.
 """
 
 
@@ -75,7 +76,7 @@ async def generate_stream_response(api_key: str, chat_payload: ChatRequest):
             # -------------------
         else:
             details = PREDEFINED_CHARACTERS.get(persona_id, {})
-            char_name = details.get("name", "Aura")
+            char_name = details.get("name", "Mochi")
             char_desc = details.get("description", "A caring companion.")
             char_tone = details.get("tone", "Empathetic")
 

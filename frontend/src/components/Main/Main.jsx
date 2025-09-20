@@ -4,7 +4,7 @@ import { AppContext } from "../../context/AppContext";
 import MyLoader from "../Loader/Loader";
 import { assets } from "../../assets/assets";
 import PropTypes from "prop-types";
-
+import ReactMarkdown from 'react-markdown'; 
 
 const Main = ({ onSent, currentPersona  }) => {
   const { Input, setInput, chatHistory, Loading } = useContext(AppContext);
@@ -51,7 +51,7 @@ const Main = ({ onSent, currentPersona  }) => {
                   <span className="gradient-text">MOCHI.Ai</span>
                 </p>
                 <p className="text-[2.6vh] lg:text-[5vh]">
-                  Just Breathe, I'm here to listen!
+                  Just Breathe, I&apos;m here to listen!
                 </p>
               </div>
 
@@ -63,7 +63,7 @@ const Main = ({ onSent, currentPersona  }) => {
                   className="card relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 h-36 w-36 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
                 >
                   <p className="text-[13px] w-24">
-                    I'm feeling a little overwhelmed today.
+                    I&apos;m feeling a little overwhelmed today.
                   </p>
                 </div>
                 <div
@@ -73,7 +73,7 @@ const Main = ({ onSent, currentPersona  }) => {
                   className="card h-36 w-36 relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
                 >
                   <p className="text-[13px] w-24">
-                    Can we talk through a problem I'm facing?
+                    Can we talk through a problem I&apos;m facing?
                   </p>
                 </div>
                 <div
@@ -119,15 +119,13 @@ const Main = ({ onSent, currentPersona  }) => {
                     </p>
                   </div>
                   <div className="result-data ml-1 flex gap-2">
-                    <div className="w-[30px]"></div>{" "}
-                    {/* Spacer for alignment */}
-                    <p
-                      className="mt-1 text-zinc-200"
-                      style={{ whiteSpace: "pre-wrap" }}
-                    >
-                      {message.parts[0]}
-                    </p>
-                  </div>
+  <div className="w-[30px]"></div> {/* Spacer for alignment */}
+  <div className="mt-1 text-zinc-200 w-full"> {/* Apply styling to this container */}
+    <ReactMarkdown>
+      {message.parts[0]}
+    </ReactMarkdown>
+  </div>
+</div>
                 </div>
               ))}
               {Loading && (
