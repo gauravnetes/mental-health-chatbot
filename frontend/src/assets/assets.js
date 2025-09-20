@@ -12,6 +12,8 @@ import urban from "./urban.png";
 import help from "./help.svg";
 import logo from "./logo.png";
 import persona from "./cpu.png";
+import logout from "./logout.jpg";
+
 
 
 export const assets = {
@@ -28,5 +30,6 @@ export const assets = {
   urban,
   help,
   logo,
-  persona
+  persona,
+  logout,
 };
