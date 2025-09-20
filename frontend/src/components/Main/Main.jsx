@@ -9,12 +9,12 @@ const Main = () => {
     Input,
     setInput,
     RecentPrompt,
-    setRecentPrompt,
-    PrevPrompt,
-    setPrevPrompt,
+    // setRecentPrompt,
+    // PrevPrompt,
+    // setPrevPrompt,
     ShowResult,
     Loading,
-    setResultData,
+    // setResultData,
     ResultData,
     onSent,
   } = useContext(Context);
@@ -46,8 +46,8 @@ const Main = () => {
         <>
           <div className="greet-cards relative h-32 text-center top-16 lg;top-20 ">
             <div className=" flex flex-col">
-            <p className="text-[7vh]  lg:text-[13vh]">
-              <span>Hello Deviies!</span>
+            <p id="logo" className="text-[7vh] lg:text-[13vh]">
+              <span>MOCHI.Ai</span>
             </p>
             <p className="text-[2.6vh] lg:text-[5vh] ">
             Ask anything, I’m here to help!{" "}

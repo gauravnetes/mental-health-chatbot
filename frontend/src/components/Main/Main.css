@@ -1,3 +1,14 @@
+
+body {
+  font-family: 'customfont', sans-serif;
+}
+
+
+#logo{
+    font-family: "logoFont";
+}
+
+
 .greet-cards p{
     color: #9fa0a0;
 }
