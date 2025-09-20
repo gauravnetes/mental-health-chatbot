@@ -1,0 +1,33 @@
+.greet-cards p{
+    color: #9fa0a0;
+}
+.greet-cards span{
+ background: -webkit-linear-gradient(16deg, #be4bdb 5%, #9775fa);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+}
+.result::-webkit-scrollbar{
+    display: none;
+    
+}
+.result-data p{
+    line-height: 2.5;
+    width: 90%;
+}
+.result-data p b{
+   color: #67dfff;
+}
+.result-data p h2{
+   color: 	#b581fe;
+}
+.prompt button{
+    animation: lift .5s ease-in;
+}
+@keyframes lift{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
