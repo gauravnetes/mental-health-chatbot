@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types'; // 1. IMPORT PROPTYPES
 
 // A simple component for the persona cards
 const PersonaCard = ({ to, name, description, isRecommended }) => (
@@ -13,9 +14,18 @@ const PersonaCard = ({ to, name, description, isRecommended }) => (
   </Link>
 );
 
+// 2. DEFINE THE PROPS FOR PERSONACARD
+PersonaCard.propTypes = {
+  to: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  isRecommended: PropTypes.bool.isRequired,
+};
+
+
 const PersonaHub = () => {
   const location = useLocation();
-  const mood = location.state?.mood; // e.g., 'overwhelmed'
+  const mood = location.state?.mood;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-[#27272A] text-white p-6">
