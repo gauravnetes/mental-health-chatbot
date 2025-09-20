@@ -11,18 +11,26 @@ import send from "./send.svg";
 import urban from "./urban.png";
 import help from "./help.svg";
 import logo from "./logo.png";
+import doraa from "./doraa-removebg-preview.png";
+import shin from "./shinchan.png";
+import shiz from "./shizuka.png";
+import sign from "./sign.png"
 
 export const assets = {
   add,
   plane,
   brain,
   profile,
+  sign,
   astra,
   contri,
+  doraa,
   follow,
   react,
   recent,
   send,
+  shin,
+  shiz,
   urban,
   help
 };

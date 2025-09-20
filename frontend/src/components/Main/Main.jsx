@@ -51,52 +51,77 @@ const Main = () => {
 
         {chatHistory.length === 0 ? (
           <>
-            <div className="greet-cards relative h-32 text-center top-16 lg:top-20">
-              <div className="flex flex-col">
-                <p id="logo" className="text-[7vh] lg:text-[13vh]">
-                  <span className="gradient-text">MOCHI.Ai</span>
-                </p>
-                <p className="text-[2.6vh] lg:text-[5vh]">
-                  Just Breathe, I'm here to listen!
-                </p>
-              </div>
+  <div className="greet-cards relative h-32 text-center top-16 lg:top-20">
+    <div className="flex flex-col">
+      <p id="logo" className="text-[7vh] lg:text-[13vh]">
+        <span>MOCHI.Ai</span>
+      </p>
+      <p className="text-[2.6vh] lg:text-[5vh]">
+        Just Breathe, I’m here to listen!{" "}
+      </p>
+    </div>
 
-              <div className="cards h-72 w-[100%] absolute lg:left-[50%] lg:-translate-x-[50%] mt-20 lg:mt-4 flex justify-center items-center flex-wrap gap-2 lg:gap-5">
-                <div
-                  onClick={() => handleCardClick("I'm feeling a little overwhelmed today.")}
-                  className="card relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 h-36 w-36 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
-                >
-                  <p className="text-[13px] w-24">
-                    I'm feeling a little overwhelmed today.
-                  </p>
-                </div>
-                <div
-                  onClick={() => handleCardClick("Can we talk through a problem I'm facing?")}
-                  className="card h-36 w-36 relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
-                >
-                  <p className="text-[13px] w-24">
-                    Can we talk through a problem I'm facing?
-                  </p>
-                </div>
-                <div
-                  onClick={() => handleCardClick("Tell me something to feel grateful for.")}
-                  className="card relative h-36 w-36 transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
-                >
-                  <p className="text-[13px] w-24">
-                    Tell me something to feel grateful for.
-                  </p>
-                </div>
-                <div
-                  onClick={() => handleCardClick("Help me practice a simple breathing exercise.")}
-                  className="card h-36 w-36 relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
-                >
-                  <p className="text-[13px] w-24">
-                    Help me practice a simple breathing exercise.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </>
+    <div className="cards h-72 w-[100%] absolute lg:left-[50%] lg:-translate-x-[50%] mt-20 lg:mt-4 flex justify-center items-center flex-wrap gap-2 lg:gap-5">
+      <div
+        onClick={() => handleCardClick(" I need a gadget to get out of doing my chores!")}
+        className="card relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 h-36 w-36 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
+      >
+        <p className="text-[13px] w-24">
+           I need a gadget to get out of doing my chores!
+        </p>
+        <img
+          className="w-[85px] h-[145px] absolute top-20 right-1 opacity-0 lg:opacity-100 transition-all duration-300 hover:scale-125 hover:translate-y-[-5px] hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] cursor-pointer"
+          src={assets.doraa}
+          alt="Doraemon helper"
+        />
+      </div>
+
+      <div
+        onClick={() => handleCardClick("What's a good way to relax when I'm feeling stressed?")}
+        className="card h-36 w-36 relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
+      >
+        <p className="text-[13px] w-24">
+          What's a good way to relax when I'm feeling stressed?
+        </p>
+        <img
+          className="w-[65px] h-[85px] absolute right-1 opacity-0 lg:opacity-100 transition-all duration-300 hover:scale-125 hover:translate-y-[-5px] hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] cursor-pointer"
+          src={assets.shiz}
+          alt="Shizuka helper"
+        />
+      </div>
+
+      <div
+        onClick={() => handleCardClick("What's a good way to cause some mischievous fun?")}
+        className="card relative h-36 w-36 transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
+      >
+        <p className="text-[13px] w-24">
+          What's a good way to cause some mischievous fun?
+        </p>
+        <img
+          className="w-[65px] h-[75px] absolute top-32 right-1 opacity-0 lg:opacity-100 transition-all duration-300 hover:scale-125 hover:translate-y-[-5px] hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] cursor-pointer"
+          src={assets.shin}
+          alt="Shinchan helper"
+        />
+      </div>
+
+      <div
+        onClick={() => handleCardClick("Help me practice a simple breathing exercise.")}
+        className="card h-36 w-36 relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
+      >
+        <p className="text-[13px] w-24">
+          Help me practice a simple breathing exercise.
+        </p>
+        <img
+          className="w-[35px] h-[35px] absolute bottom-5 right-5 opacity-0 lg:opacity-100 cursor-pointer"
+          src={assets.sign}
+          alt=""
+        />
+      </div>
+    </div>
+  </div>
+</>
+
+
         ) : (
           <>
             <div className="result px-5 w-100% h-[71vh] overflow-auto absolute lg:px-72 top-20 lg:top-24 py-2 flex flex-col gap-4">
