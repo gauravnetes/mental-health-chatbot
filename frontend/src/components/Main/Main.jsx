@@ -114,8 +114,8 @@ const Main = ({ onSent, currentPersona  }) => {
                       }
                       alt={message.role}
                     />
-                    <p className="font-bold text-sm">
-                      {message.role === "user" ? "You" :  (currentPersona.name || "Mochi")}
+                    <p className="font-bold text-lime-500 text-xl">
+                      {message.role === "user" ? "You" :  (currentPersona.name || "Mochi")} :
                     </p>
                   </div>
                   <div className="result-data ml-1 flex gap-2">
