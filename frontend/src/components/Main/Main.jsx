@@ -6,7 +6,7 @@ import { assets } from "../../assets/assets";
 import PropTypes from "prop-types";
 
 
-const Main = ({ onSent }) => {
+const Main = ({ onSent, currentPersona  }) => {
   const { Input, setInput, chatHistory, Loading } = useContext(AppContext);
 
   const chatEndRef = useRef(null);
@@ -115,7 +115,7 @@ const Main = ({ onSent }) => {
                       alt={message.role}
                     />
                     <p className="font-bold text-sm">
-                      {message.role === "user" ? "You" : "Mochi"}
+                      {message.role === "user" ? "You" :  (currentPersona.name || "Mochi")}
                     </p>
                   </div>
                   <div className="result-data ml-1 flex gap-2">
@@ -167,6 +167,7 @@ const Main = ({ onSent }) => {
 
 Main.propTypes = {
   onSent: PropTypes.func.isRequired,
+  currentPersona: PropTypes.object,
 };
 
 export default Main;

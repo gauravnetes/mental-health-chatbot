@@ -50,7 +50,7 @@ function ChatPage() {
   return (
     <div className="flex w-full h-screen bg-[#27272A]">
       <Sidebar />
-      <Main onSent={handleSend} />
+      <Main onSent={handleSend} currentPersona={currentPersona}  />
     </div>
   );
 }
