@@ -3,15 +3,11 @@ import "./Main.css";
 import { AppContext } from "../../context/AppContext";
 import MyLoader from "../Loader/Loader";
 import { assets } from "../../assets/assets";
+import PropTypes from "prop-types";
 
-const Main = () => {
-  const {
-    Input,
-    setInput,
-    onSent,
-    chatHistory,
-    Loading,
-  } = useContext(AppContext);
+
+const Main = ({ onSent }) => {
+  const { Input, setInput, chatHistory, Loading } = useContext(AppContext);
 
   const chatEndRef = useRef(null);
 
@@ -22,13 +18,12 @@ const Main = () => {
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && Input) {
-      onSent();
+      onSent(Input); // 2. Call the onSent from props
     }
   };
 
-  // This function will be used for the welcome cards
-  const handleCardClick = (promptText) => {
-    onSent(promptText);
+  const handleCardClick = (prompt) => {
+    onSent(prompt); // 3. Call the onSent from props
   };
 
   return (
@@ -63,7 +58,9 @@ const Main = () => {
 
               <div className="cards h-72 w-[100%] absolute lg:left-[50%] lg:-translate-x-[50%] mt-20 lg:mt-4 flex justify-center items-center flex-wrap gap-2 lg:gap-5">
                 <div
-                  onClick={() => handleCardClick("I'm feeling a little overwhelmed today.")}
+                  onClick={() =>
+                    handleCardClick("I'm feeling a little overwhelmed today.")
+                  }
                   className="card relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 h-36 w-36 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
                 >
                   <p className="text-[13px] w-24">
@@ -71,7 +68,9 @@ const Main = () => {
                   </p>
                 </div>
                 <div
-                  onClick={() => handleCardClick("Can we talk through a problem I'm facing?")}
+                  onClick={() =>
+                    handleCardClick("Can we talk through a problem I'm facing?")
+                  }
                   className="card h-36 w-36 relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
                 >
                   <p className="text-[13px] w-24">
@@ -79,7 +78,9 @@ const Main = () => {
                   </p>
                 </div>
                 <div
-                  onClick={() => handleCardClick("Tell me something to feel grateful for.")}
+                  onClick={() =>
+                    handleCardClick("Tell me something to feel grateful for.")
+                  }
                   className="card relative h-36 w-36 transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
                 >
                   <p className="text-[13px] w-24">
@@ -87,7 +88,11 @@ const Main = () => {
                   </p>
                 </div>
                 <div
-                  onClick={() => handleCardClick("Help me practice a simple breathing exercise.")}
+                  onClick={() =>
+                    handleCardClick(
+                      "Help me practice a simple breathing exercise."
+                    )
+                  }
                   className="card h-36 w-36 relative transition-all text-start ease-in-out duration-300 bg-[#181B18] hover:bg-[#161816] p-5 lg:w-40 lg:h-[26vh] rounded-3xl cursor-pointer"
                 >
                   <p className="text-[13px] w-24">
@@ -105,7 +110,9 @@ const Main = () => {
                   <div className="user flex gap-3 items-center">
                     <img
                       className="w-[30px] h-[30px] rounded-full"
-                      src={message.role === "user" ? assets.profile : assets.astra}
+                      src={
+                        message.role === "user" ? assets.profile : assets.astra
+                      }
                       alt={message.role}
                     />
                     <p className="font-bold text-sm">
@@ -113,8 +120,12 @@ const Main = () => {
                     </p>
                   </div>
                   <div className="result-data ml-1 flex gap-2">
-                    <div className="w-[30px]"></div> {/* Spacer for alignment */}
-                    <p className="mt-1 text-zinc-200" style={{ whiteSpace: "pre-wrap" }}>
+                    <div className="w-[30px]"></div>{" "}
+                    {/* Spacer for alignment */}
+                    <p
+                      className="mt-1 text-zinc-200"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    >
                       {message.parts[0]}
                     </p>
                   </div>
@@ -145,7 +156,7 @@ const Main = () => {
             placeholder="Share what's on your mind..."
           />
           {Input && (
-            <button onClick={() => onSent()}>
+            <button onClick={() => onSent(Input)}>
               <img src={assets.send} alt="Send" />
             </button>
           )}
@@ -153,6 +164,10 @@ const Main = () => {
       </div>
     </>
   );
+};
+
+Main.propTypes = {
+  onSent: PropTypes.func.isRequired,
 };
 
 export default Main;
