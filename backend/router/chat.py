@@ -15,7 +15,7 @@ async def serve_streaming_chat(payload: ChatRequest):
             yield "Configuration error: The server's API key is missing."
         return StreamingResponse(error_generator(), media_type="text/event-stream")
 
-    print(f"Received request body: {payload.model_dump()}")
+    # print(f"Received request body: {payload.model_dump()}")
     return StreamingResponse(
         generate_stream_response(
             api_key=gemini_api_key,

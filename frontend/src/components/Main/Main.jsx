@@ -4,9 +4,9 @@ import { AppContext } from "../../context/AppContext";
 import MyLoader from "../Loader/Loader";
 import { assets } from "../../assets/assets";
 import PropTypes from "prop-types";
-import ReactMarkdown from 'react-markdown'; 
+import ReactMarkdown from 'react-markdown';
 
-const Main = ({ onSent, currentPersona  }) => {
+const Main = ({ onSent, currentPersona }) => {
   const { Input, setInput, chatHistory, Loading } = useContext(AppContext);
 
   const chatEndRef = useRef(null);
@@ -22,24 +22,25 @@ const Main = ({ onSent, currentPersona  }) => {
   };
 
   const handleCardClick = (prompt) => {
-    onSent(prompt); 
+    onSent(prompt);
   };
 
   return (
     <>
       <div className="relative w-[100%] h-[100vh] overflow-hidden">
         <div className="relative bg-red lg:px-5 lg:py-5">
-          <nav className="flex justify-between mt-8 lg:mt-0">
+          <nav className="flex bg-red-300 flex-row justify-between mt-8 lg:mt-0">
             <a href="/">
               <h1 className="absolute left-[17vw] mt-1 lg:mt-0 lg:left-[6vw] text-2xl font-semibold">
-                <span className="gradient-text">MOCHI.Ai</span>
+                <span className="gradient-text">MOCHI.Ai
+                {/* <img
+                  className="absolute right-5 w-[40px] h-[40px] rounded-full"
+                  src={assets.profile}
+                  alt="user"
+                /> */}
+                </span>
               </h1>
             </a>
-            <img
-              className="absolute right-5 w-[40px] h-[40px] rounded-full"
-              src={assets.profile}
-              alt="user"
-            />
           </nav>
         </div>
 
@@ -115,17 +116,17 @@ const Main = ({ onSent, currentPersona  }) => {
                       alt={message.role}
                     />
                     <p className="font-bold text-lime-500 text-xl">
-                      {message.role === "user" ? "You" :  (currentPersona.name || "Mochi")} :
+                      {message.role === "user" ? "You" : (currentPersona.name || "Mochi")} :
                     </p>
                   </div>
                   <div className="result-data ml-1 flex gap-2">
-  <div className="w-[30px]"></div> {/* Spacer for alignment */}
-  <div className="mt-1 text-zinc-200 w-full"> {/* Apply styling to this container */}
-    <ReactMarkdown>
-      {message.parts[0]}
-    </ReactMarkdown>
-  </div>
-</div>
+                    <div className="w-[30px]"></div> {/* Spacer for alignment */}
+                    <div className="mt-1 text-zinc-200 w-full"> {/* Apply styling to this container */}
+                      <ReactMarkdown>
+                        {message.parts[0]}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
                 </div>
               ))}
               {Loading && (
