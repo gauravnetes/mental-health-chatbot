@@ -23,6 +23,8 @@ app = FastAPI(title="HOMH04 AI Chatbot API")
 origins = [
     "http://localhost:3000",
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "*" # A simple wildcard for hackathon purposes
 ]
 app.add_middleware(
     CORSMiddleware,

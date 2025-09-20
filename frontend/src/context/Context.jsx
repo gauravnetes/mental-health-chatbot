@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AppContext } from "./AppContext";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const ContextProvider = (props) => {
   const [Input, setInput] = useState("");
@@ -8,65 +8,86 @@ const ContextProvider = (props) => {
   const [PrevPrompt, setPrevPrompt] = useState([]);
   const [ShowResult, setShowResult] = useState(false);
   const [Loading, setLoading] = useState(false);
-  const [ResultData, setResultData] = useState("");
-
-  // You can add a state for the persona and change it from your UI later
-  const [persona, setPersona] = useState("mochi"); // Default persona
+  const [chatHistory, setChatHistory] = useState([]);
+  const [persona, setPersona] = useState("mochi");
 
   const newChat = () => {
     setLoading(false);
     setShowResult(false);
+    setChatHistory([]); // FIX: Clears the chat history to reset the screen
   };
 
   const onSent = async (prompt) => {
-    // Reset previous results
-    setResultData("");
     setLoading(true);
     setShowResult(true);
 
-    // Determine the prompt to send
     const promptToSend = prompt !== undefined ? prompt : Input;
-    setRecentPrompt(promptToSend);
-
-    // Clear the input field
     setInput("");
+    setRecentPrompt(promptToSend);
+    setPrevPrompt((prev) => [...prev, promptToSend]);
+
+    // FIX: Create a new history variable with the user's message.
+    // This prevents sending stale data to the backend.
+    const userMessage = { role: "user", parts: [{ text: promptToSend }] };
+    const newHistoryWithUserMessage = [...chatHistory, userMessage];
+
+    // FIX: Perform a single, atomic state update for the UI.
+    // This adds both the user's message and the AI's placeholder at once, preventing race conditions.
+    const aiPlaceholder = { role: "model", parts: [{ text: "" }] };
+    setChatHistory([...newHistoryWithUserMessage, aiPlaceholder]);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/chat/stream", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: promptToSend,
-          persona: persona, // Send the currently selected persona
-        }),
-      });
+      const response = await fetch(
+         "http://127.0.0.1:8000/api/chat/stream", 
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: promptToSend,
+            persona: persona,
+            // FIX: Send the up-to-date history (without the AI placeholder) to the backend.
+            history: newHistoryWithUserMessage.slice(-8), // Send last 8 turns for better context
+          }),
+        }
+      );
 
-      if (!response.body) {
-        throw new Error("Response body is null.");
-      }
+      if (!response.body) throw new Error("Response body is null.");
 
-      // Prepare to read the stream
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      setLoading(false); // Stop the loader once the first chunk arrives
+      setLoading(false); // Stop loader once stream starts
 
-      // Read from the stream continuously
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break; // Stream is finished
+        if (done) break;
 
         const chunk = decoder.decode(value);
 
-        // Append the new chunk to ResultData in real-time
-        setResultData((prev) => prev + chunk);
+        // FIX: A more robust way to update the last message in the stream.
+        setChatHistory((prev) => {
+          const lastMessage = prev[prev.length - 1];
+          const updatedContent = lastMessage.parts[0].text + chunk;
+          const updatedLastMessage = {
+            ...lastMessage,
+            parts: [{ text: updatedContent }],
+          };
+          return [...prev.slice(0, -1), updatedLastMessage];
+        });
       }
     } catch (error) {
       console.error("Streaming failed:", error);
-      setResultData("Oops! Something went wrong. Please try again.");
+      setChatHistory((prev) => [
+        ...prev.slice(0, -1),
+        {
+          role: "model",
+          parts: [{ text: "Oops! Something went wrong. Please try again." }],
+        },
+      ]);
       setLoading(false);
     }
   };
 
+  // FIX: Added 'chatHistory' to the context value so components can access it.
   const contextValue = {
     Input,
     setInput,
@@ -76,10 +97,10 @@ const ContextProvider = (props) => {
     setPrevPrompt,
     ShowResult,
     Loading,
-    ResultData,
     onSent,
     newChat,
     setPersona,
+    chatHistory, // This was the critical missing piece
   };
 
   return (
@@ -89,10 +110,9 @@ const ContextProvider = (props) => {
   );
 };
 
-
 ContextProvider.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
-
 export default ContextProvider;
+
