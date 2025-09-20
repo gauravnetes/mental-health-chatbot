@@ -14,7 +14,7 @@ const ContextProvider = (props) => {
   const newChat = () => {
     setLoading(false);
     setShowResult(false);
-    setChatHistory([]); // FIX: Clears the chat history to reset the screen
+    setChatHistory([]);
   };
 
   const onSent = async (prompt) => {
@@ -26,36 +26,38 @@ const ContextProvider = (props) => {
     setRecentPrompt(promptToSend);
     setPrevPrompt((prev) => [...prev, promptToSend]);
 
-    // FIX: Create a new history variable with the user's message.
-    // This prevents sending stale data to the backend.
-    const userMessage = { role: "user", parts: [{ text: promptToSend }] };
+    // FIX 1: Changed the data structure of 'parts' to be an array of strings
+    const userMessage = { role: "user", parts: [promptToSend] };
     const newHistoryWithUserMessage = [...chatHistory, userMessage];
 
-    // FIX: Perform a single, atomic state update for the UI.
-    // This adds both the user's message and the AI's placeholder at once, preventing race conditions.
-    const aiPlaceholder = { role: "model", parts: [{ text: "" }] };
+    const aiPlaceholder = { role: "model", parts: [""] };
     setChatHistory([...newHistoryWithUserMessage, aiPlaceholder]);
 
     try {
       const response = await fetch(
-         "http://127.0.0.1:8000/api/chat/stream", 
+        "http://127.0.0.1:8000/api/chat/stream", // Using localhost for local testing
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             message: promptToSend,
-            persona: persona,
-            // FIX: Send the up-to-date history (without the AI placeholder) to the backend.
-            history: newHistoryWithUserMessage.slice(-8), // Send last 8 turns for better context
+            persona: { id: persona },
+            chatHistory: newHistoryWithUserMessage.slice(-8),
           }),
         }
       );
 
+      // This handles the 422 error specifically
+      if (response.status === 422) {
+        const errorData = await response.json();
+        console.error("Validation Error:", errorData);
+        throw new Error("The data sent to the server was invalid.");
+      }
       if (!response.body) throw new Error("Response body is null.");
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      setLoading(false); // Stop loader once stream starts
+      setLoading(false);
 
       while (true) {
         const { done, value } = await reader.read();
@@ -63,13 +65,13 @@ const ContextProvider = (props) => {
 
         const chunk = decoder.decode(value);
 
-        // FIX: A more robust way to update the last message in the stream.
+        // FIX 2: Updated the streaming logic to work with an array of strings
         setChatHistory((prev) => {
           const lastMessage = prev[prev.length - 1];
-          const updatedContent = lastMessage.parts[0].text + chunk;
+          const updatedContent = lastMessage.parts[0] + chunk;
           const updatedLastMessage = {
             ...lastMessage,
-            parts: [{ text: updatedContent }],
+            parts: [updatedContent],
           };
           return [...prev.slice(0, -1), updatedLastMessage];
         });
@@ -80,14 +82,14 @@ const ContextProvider = (props) => {
         ...prev.slice(0, -1),
         {
           role: "model",
-          parts: [{ text: "Oops! Something went wrong. Please try again." }],
+          // FIX 3: Updated the error message structure
+          parts: ["Oops! Something went wrong. Please try again."],
         },
       ]);
       setLoading(false);
     }
   };
 
-  // FIX: Added 'chatHistory' to the context value so components can access it.
   const contextValue = {
     Input,
     setInput,
@@ -100,7 +102,7 @@ const ContextProvider = (props) => {
     onSent,
     newChat,
     setPersona,
-    chatHistory, // This was the critical missing piece
+    chatHistory,
   };
 
   return (
