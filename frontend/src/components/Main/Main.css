@@ -15,8 +15,10 @@ body {
 .result::-webkit-scrollbar {
   display: none;
 }
+
 .result-data p {
-  line-height: 2.5;
+  line-height: 2;
+  font-family: "chat";
   width: 90%;
 }
 .result-data p b {
