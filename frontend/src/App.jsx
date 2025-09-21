@@ -3,10 +3,10 @@ import { SignIn, SignUp, SignedIn, SignedOut, RedirectToSignIn,UserButton } from
 
 import { PersonaProvider } from './context/PersonaProvider.jsx';
 
-import MoodCheck from './pages/MoodChecker.jsx';
-import PersonaHub from './pages/PersonaDock.jsx';
+import MoodCheck from './pages/MoodCheck.jsx';
+import PersonaHub from './pages/PersonaHub.jsx';
 import CreatePersona from './pages/CreatePersona';
-import ChatPage from './pages/MainChatPage.jsx';
+import ChatPage from './pages/ChatPage.jsx';
 
 
 function App() {
@@ -22,7 +22,6 @@ function App() {
         </SignedIn>
       </header>
       <Routes>
-        {/* Public routes */}
         <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
         <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
         

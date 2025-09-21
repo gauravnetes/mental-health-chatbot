@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .animate-fade-dark-blur-in {
+    animation: fadeBlurIn 0.8s ease-out forwards;
+  }
+}
+
 @font-face {
   font-family: 'logoFont';
   src: url('/fonts/Capriola-Regular.ttf') format('truetype');
@@ -39,11 +45,17 @@
   animation: fadeIn 1.5s;
 }
 
-@keyframes fadeIn {
+@keyframes fadeDarkBlurIn {
   0% {
-    opacity: 0.8;
+    opacity: 0;
+    filter: blur(12px) brightness(0.4);
   }
   100% {
     opacity: 1;
+    filter: blur(0) brightness(1);
   }
+}
+
+.fade-dark-blur-in {
+  animation: fadeDarkBlurIn 0.9s ease-out forwards;
 }
