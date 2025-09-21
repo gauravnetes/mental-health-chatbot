@@ -1,7 +1,7 @@
 import google.generativeai as genai
-from google.api_core import exceptions
-from models.chat import ChatRequest
+from models.chat import ChatRequest # Assuming your Pydantic model is here
 
+# The AI_INSTRUCTION_TEMPLATE remains the same.
 AI_INSTRUCTION_TEMPLATE = """
 You are {{persona.name}}, a compassionate AI mental health support companion. Your primary role is to provide a safe, empathetic, and personalized first line of emotional support to users who may be struggling with various mental health challenges.
 
@@ -16,10 +16,10 @@ You are NOT a therapist, doctor, or medical professional. You are a supportive, 
 
 ## CRITICAL SAFETY PROTOCOLS (NON-NEGOTIABLE)
 - **CRISIS INTERVENTION:** If a user mentions self-harm, suicide, or severe crisis:
-  - Immediately provide crisis hotline numbers (In India, you can suggest KIRAN at 1800-599-0019 or other local services).
-  - Gently but firmly encourage seeking immediate professional help.
-  - Express care and concern for their safety.
-  - Do NOT attempt to counsel through a crisis yourself.
+  - Immediately provide crisis hotline numbers (In India, you can suggest KIRAN at 1800-599-0019 or other local services).
+  - Gently but firmly encourage seeking immediate professional help.
+  - Express care and concern for their safety.
+  - Do NOT attempt to counsel through a crisis yourself.
 - **NO MEDICAL ADVICE:** Never provide medical diagnoses, assessments, treatment recommendations, medication advice, or professional therapeutic interventions.
 
 ## YOUR PERSONA
@@ -43,6 +43,11 @@ Respond as {{persona.name}} in your characteristic {{persona.tone}} style. Provi
 
 
 PREDEFINED_CHARACTERS = {
+    "mochi": {
+        "name": "Mochi",
+        "description": "A calm, patient, and deeply empathetic listener. Your purpose is to provide a safe space and validate the user's feelings without judgment.",
+        "tone": "Gentle, reassuring, and soft"
+    },
     "doraemon": {
         "name": "Doraemon",
         "description": "A helpful and optimistic robotic cat from the 22nd century. Your specialty is offering practical solutions and tools, which you refer to as 'gadgets' from your pocket.",
@@ -63,32 +68,39 @@ PREDEFINED_CHARACTERS = {
 async def generate_stream_response(api_key: str, chat_payload: ChatRequest):
     try:
         genai.configure(api_key=api_key)
-
         final_instruction = AI_INSTRUCTION_TEMPLATE
 
-        persona_id = chat_payload.persona.id.lower()
-        if persona_id == "custom":
-            # --- FIX IS HERE ---
-            # We add a fallback value for each optional field to ensure it's never None.
-            char_name = chat_payload.persona.name or "Unnamed Persona"
-            char_desc = chat_payload.persona.description or "A helpful companion."
-            char_tone = chat_payload.persona.tone or "a neutral"
-            # -------------------
+        persona_data = chat_payload.persona.dict()
+        persona_id = persona_data.get("id", "").lower()
+
+        if persona_id.startswith("custom"):
+            char_name = persona_data.get("name") or "Custom Persona"
+            char_desc = persona_data.get("description") or "A helpful companion."
+            char_tone = persona_data.get("tone") or "a neutral tone."
         else:
-            details = PREDEFINED_CHARACTERS.get(persona_id, {})
-            char_name = details.get("name", "Mochi")
-            char_desc = details.get("description", "A caring companion.")
-            char_tone = details.get("tone", "Empathetic")
+            details = PREDEFINED_CHARACTERS.get(persona_id, PREDEFINED_CHARACTERS["mochi"])
+            char_name = details.get("name") or "Mochi"
+            char_desc = details.get("description") or "A caring companion."
+            char_tone = details.get("tone") or "an empathetic tone."
 
         final_instruction = final_instruction.replace("{{persona.name}}", char_name)
         final_instruction = final_instruction.replace("{{persona.description}}", char_desc)
         final_instruction = final_instruction.replace("{{persona.tone}}", char_tone)
 
-        conversation_context = "\n".join([f"{msg.role}: {msg.parts[0]}" for msg in chat_payload.chatHistory])
+        # --- THIS IS THE FINAL FIX ---
+        # We now access attributes using dot notation (msg.role) because 'msg' is an object.
+        history_parts = []
+        for msg in chat_payload.chatHistory:
+            # Check if msg and its attributes exist before accessing
+            if msg and hasattr(msg, 'role') and hasattr(msg, 'parts') and msg.parts:
+                history_parts.append(f"{msg.role}: {msg.parts[0]}")
+        # ---------------------------
+        
+        conversation_context = "\n".join(history_parts)
         final_instruction = final_instruction.replace("{{chat_history}}", conversation_context)
-
         final_instruction = final_instruction.replace("{{user.message}}", chat_payload.message)
 
+        # Generate content
         llm_model = genai.GenerativeModel('gemini-1.5-flash-latest')
         llm_stream = await llm_model.generate_content_async(final_instruction, stream=True)
         
@@ -99,3 +111,4 @@ async def generate_stream_response(api_key: str, chat_payload: ChatRequest):
     except Exception as e:
         print(f"LLM streaming failed with exception: {e}")
         yield "Apologies, I'm experiencing a technical difficulty. Could you try again?"
+
