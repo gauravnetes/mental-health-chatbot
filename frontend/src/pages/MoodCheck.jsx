@@ -1,16 +1,19 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
-import  { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { PersonaAppContext } from "../context/PersonaAppContext"; // ✅ import context
 
 const MoodCheck = () => {
   const navigate = useNavigate();
   const [hoveredMood, setHoveredMood] = useState(null);
   const [selectedMood, setSelectedMood] = useState(null);
 
+  const { setMood } = useContext(PersonaAppContext); // ✅ grab setMood
+
   const handleMoodSelect = (mood) => {
     setSelectedMood(mood);
-    navigate('/personas', { state: { mood } });
+    setMood(mood); // ✅ save globally in context
+    navigate("/personas"); // no need to pass state anymore
     console.log("Selected mood:", mood);
   };
 
@@ -52,7 +55,7 @@ const MoodCheck = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#27272A] text-white p-4">
       <div className="flex flex-col items-center">
-        {/* Logo with enhanced styling */}
+        {/* Logo */}
         <div className="text-center mb-4 group">
           <h1 className="text-6xl md:text-8xl font-black mb-2 relative">
             <span className="text-[#00FF41] drop-shadow-2xl group-hover:scale-105 transition-transform duration-300 inline-block font-logoFont">
@@ -115,14 +118,11 @@ const MoodCheck = () => {
                       )}
                     </div>
                   </div>
-
-                  {/* Hover effect overlay */}
                   <div className="absolute inset-0 rounded-2xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </button>
               ))}
             </div>
 
-            {/* Subtle call to action */}
             <div className="text-center mt-8">
               <p className="text-zinc-500 text-sm">
                 {selectedMood
@@ -134,15 +134,7 @@ const MoodCheck = () => {
         </SignedIn>
 
         <SignedOut>
-          <div
-            className="text-center 
-                bg-white/4       
-                backdrop-blur-lg  
-                border border-white/30  
-                shadow-xl        
-                px-10 py-5 
-                rounded-2xl"
-          >
+          <div className="text-center bg-white/4 backdrop-blur-lg border border-white/30 shadow-xl px-10 py-5 rounded-2xl">
             <div className="mb-8">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">
                 Ready to begin?
@@ -151,7 +143,6 @@ const MoodCheck = () => {
                 Because your thoughts deserve a safe space — with MOCHI.ai!
               </p>
             </div>
-
             <SignInButton mode="modal">
               <button className="group relative px-5 py-2 bg-[#00FF41] text-lg rounded-2xl hover:shadow-2xl hover:shadow-lime-900/5 transition-all duration-500 transform hover:scale-100 hover:-translate-y-1">
                 <span className="relative z-10 text-zinc-800 font-extrabold">
@@ -163,7 +154,6 @@ const MoodCheck = () => {
         </SignedOut>
       </div>
 
-      {/* Demo toggle button */}
       <button
         onClick={() => window.location.reload()}
         className="fixed bottom-4 right-4 px-4 py-2 bg-zinc-800/80 text-zinc-300 text-sm rounded-lg hover:bg-zinc-700/80 transition-colors"

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { PersonaAppContext } from '../context/PersonaAppContext';
 
 const CreatePersona = () => {
-  const { addCustomPersona } = useContext(PersonaAppContext);
+  // 1. Get both `addCustomPersona` and `setNewlyCreatedPersonaId` from the context
+  const { addCustomPersona, setNewlyCreatedPersonaId } = useContext(PersonaAppContext);
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -18,7 +19,6 @@ const CreatePersona = () => {
     }
 
     const personaId = 'custom_' + Date.now();
-
     const newPersona = {
       id: personaId,
       name,
@@ -29,8 +29,11 @@ const CreatePersona = () => {
 
     addCustomPersona(newPersona);
     
-    // FIX: Pass the new persona object in the navigation state
-    // This solves the race condition by giving the ChatPage the data it needs immediately.
+    // 2. THIS IS THE FIX: Set the ID of the new persona in the context
+    // This tells the PersonaHub which card to highlight.
+    setNewlyCreatedPersonaId(personaId);
+    
+    // 3. Navigate to the chat page. The PersonaHub will now have the ID it needs.
     navigate(`/chat/${personaId}`, { state: { newPersona: newPersona } });
   };
 
