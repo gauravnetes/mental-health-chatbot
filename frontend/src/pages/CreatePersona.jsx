@@ -4,14 +4,14 @@ import { PersonaAppContext } from '../context/PersonaAppContext';
 
 const CreatePersona = () => {
   // 1. Get both `addCustomPersona` and `setNewlyCreatedPersonaId` from the context
-  const { addCustomPersona, setNewlyCreatedPersonaId } = useContext(PersonaAppContext);
+  const { addCustomPersona, setNewlyCreatedPersonaId, setMood } = useContext(PersonaAppContext);
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [tone, setTone] = useState('Friendly & Casual');
 
-  const handleSubmit = (e) => {
+   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim() || !description.trim()) {
       alert("Please fill in both name and description.");
@@ -27,13 +27,17 @@ const CreatePersona = () => {
       isCustom: true
     };
 
+    // 2. Save the new persona to your list
     addCustomPersona(newPersona);
     
-    // 2. THIS IS THE FIX: Set the ID of the new persona in the context
+    // 3. THIS IS THE KEY FIX: Set the ID of the new persona in the context.
     // This tells the PersonaHub which card to highlight.
     setNewlyCreatedPersonaId(personaId);
+
+    // 4. Clear any previous mood selection so the new persona is the *only* recommendation.
+    setMood(null);
     
-    // 3. Navigate to the chat page. The PersonaHub will now have the ID it needs.
+    // 5. Navigate to the chat page to start the conversation immediately.
     navigate(`/chat/${personaId}`, { state: { newPersona: newPersona } });
   };
 

@@ -8,13 +8,15 @@ const MoodCheck = () => {
   const [hoveredMood, setHoveredMood] = useState(null);
   const [selectedMood, setSelectedMood] = useState(null);
 
-  const { setMood } = useContext(PersonaAppContext); // ✅ grab setMood
+  const { setMood, setNewlyCreatedPersonaId } = useContext(PersonaAppContext);
 
   const handleMoodSelect = (mood) => {
     setSelectedMood(mood);
-    setMood(mood); // ✅ save globally in context
-    navigate("/personas"); // no need to pass state anymore
-    console.log("Selected mood:", mood);
+    // 2. THIS IS THE FIX: Clear the "newly created" status
+    setNewlyCreatedPersonaId(null);
+    // 3. Set the new mood
+    setMood(mood);
+    navigate("/personas");
   };
 
   const moods = [
